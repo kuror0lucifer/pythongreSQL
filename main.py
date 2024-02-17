@@ -56,7 +56,29 @@ class pythongre:
             if connection:
                 connection.close()
                 print('Соединение закрыто')
-                
+
+    def deleteTable(self):
+        table_name=input('Какую таблицу Вы хотите удалить? ')
+        try:
+            connection = psycopg2.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.dbname,
+            )
+            connection.autocommit = True
+            
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    f'DROP TABLE {table_name};'
+                )
+        except Exception as ex:
+            print('Ошибка работы с PostgreSQL', ex)
+        finally:
+            if connection:
+                connection.close()
+                print('Соединение закрыто')
+                    
 test = pythongre(host, dbname, user, password)
 
-test.addingColumn()
+test.deleteTable()

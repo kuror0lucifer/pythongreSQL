@@ -1,6 +1,6 @@
 import psycopg2
 from config import host, dbname, user, password
-
+from TryExceptFinally import final
 class pythongre:
     def __init__(self, host, dbname, user, password):
         self.host = host
@@ -8,6 +8,26 @@ class pythongre:
         self.user = user
         self.password = password
     
+    def createDB(self):
+        db_name = input('Введите название базы данных, которую хотите создать: ')
+        try:
+            connection = psycopg2.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.dbname,
+            )
+            connection.autocommit = True
+            
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    f'CREATE DATABASE {db_name}'
+                )
+        except Exception as ex:
+            print('Ошибка работы с PostgreSQL', ex)
+        finally:
+            final(connection)
+            
     def createTable(self):
         table_name=input('Какое название Вы хотите дать таблице? ')
         try:
@@ -27,9 +47,7 @@ class pythongre:
         except Exception as ex:
             print('Ошибка работы с PostgreSQL', ex)
         finally:
-            if connection:
-                connection.close()
-                print('Соединение закрыто')
+            final(connection)
                 
     def addingColumn(self):
         table_name=input('В какую таблицу Вы хотите добавить столбец? ')
@@ -53,9 +71,7 @@ class pythongre:
         except Exception as ex:
             print('Ошибка работы с PostgreSQL', ex)
         finally:
-            if connection:
-                connection.close()
-                print('Соединение закрыто')
+            final(connection)
 
     def deleteTable(self):
         table_name=input('Какую таблицу Вы хотите удалить? ')
@@ -75,10 +91,8 @@ class pythongre:
         except Exception as ex:
             print('Ошибка работы с PostgreSQL', ex)
         finally:
-            if connection:
-                connection.close()
-                print('Соединение закрыто')
-                    
+            final(connection)
+                           
 test = pythongre(host, dbname, user, password)
 
-test.deleteTable()
+test.createDB()

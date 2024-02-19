@@ -59,10 +59,40 @@ class pythongre:
             )
             connection.autocommit = True
             
+            columns = []
+            isPrimaryKeySet = False
+            while True:
+                column_name = input('Введите название столбца (или "готово", чтобы закончить): ')
+                if column_name.lower() == 'готово':
+                    break
+                
+                data_type = input(f'Введите тип данных для столбца {column_name} ')
+                not_null = input(f'Столбец {column_name} обязательно должен быть заполненным? Y/N ')
+                
+                if not_null.lower() == 'y':
+                    not_null = 'NOT NULL'
+                else:
+                    not_null = '' 
+                    
+                key = input(f'Столбец {column_name} должен иметь первичный ключ? Y/N ')
+                if key.lower() == 'y' and isPrimaryKeySet == False:
+                    key = 'PRIMARY KEY'
+                    isPrimaryKeySet = True
+                elif key.lower() == 'y' and isPrimaryKeySet == True:
+                    key = ''
+                    print('Первичный ключ уже был задан ')
+                elif key.lower() == 'n':
+                    key = ''
+
+                columns.append(f'{column_name} {data_type} {not_null} {key}')
+                
+            columns_str = ', '.join(columns)
+            
             with connection.cursor() as cursor:
                 cursor.execute(
-                    f'CREATE TABLE {table_name} ( id BIGSERIAL NOT NULL PRIMARY KEY );'
+                    f'CREATE TABLE {table_name} ({columns_str});'
                 )
+            print(f'Таблица {table_name} успешно создана с столбацми: {columns_str}')
             
         except Exception as ex:
             print('Ошибка работы с PostgreSQL', ex)
@@ -115,4 +145,4 @@ class pythongre:
                            
 test = pythongre(host, dbname, user, password)
 
-test.dropDB()
+test.createTable()

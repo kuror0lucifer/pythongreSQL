@@ -28,6 +28,26 @@ class pythongre:
         finally:
             final(connection)
             
+    def dropDB(self):
+        dbname = input('Какую базу данных Вы хотите удалить? ') 
+        try:
+            connection = psycopg2.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.dbname,
+            )
+            connection.autocommit = True
+        
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    f'DROP DATABASE {dbname}'
+                )
+        except Exception as ex:
+            print('Ошибка работы с PostgreSQL', ex)
+        finally:
+            final(connection)
+    
     def createTable(self):
         table_name=input('Какое название Вы хотите дать таблице? ')
         try:
@@ -95,4 +115,4 @@ class pythongre:
                            
 test = pythongre(host, dbname, user, password)
 
-test.createDB()
+test.dropDB()
